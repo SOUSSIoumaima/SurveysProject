@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-
+@Table(name = "survey_db")
 public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
