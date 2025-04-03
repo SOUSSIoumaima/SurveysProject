@@ -1,0 +1,429 @@
+openapi: 3.0.0
+
+info:
+  title: Survey Management API
+  description: API for managing surveys, questions, and responses.
+  version: 1.0.0
+
+
+paths:
+  /api/surveys:
+    post:
+      tags:
+        - Survey
+      summary: Create a new survey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Survey'
+      responses:
+        '201':
+          description: Survey successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Survey'
+        '400':
+          description: Invalid request data
+    get:
+      tags:
+        - Survey
+      summary: List all surveys
+      responses:
+        '200':
+          description: List of surveys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Survey'
+
+  /api/surveys/{surveyId}:
+    get:
+      tags:
+        - Survey
+      summary: Get a specific survey
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+      responses:
+        '200':
+          description: Survey details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Survey'
+        '404':
+          description: Survey not found
+    put:
+      tags:
+        - Survey
+      summary: Update a survey
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Survey'
+      responses:
+        '200':
+          description: Survey updated
+        '400':
+          description: Invalid input data
+    delete:
+      tags:
+        - Survey
+      summary: Delete a survey
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+      responses:
+        '204':
+          description: Survey deleted
+  /api/surveys/{surveyId}/lock:
+    patch:
+      tags:
+        - Survey
+      summary: Lock/Unlock a survey
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locked:
+                  type: boolean
+      responses:
+        '200':
+          description: Lock status updated
+        '404':
+          description: Survey not found
+
+
+  /api/surveys/{surveyId}/questions:
+    post:
+      tags:
+        - Question
+      summary: Add a question to a survey
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+      responses:
+        '201':
+          description: Question successfully added
+    get:
+      tags:
+        - Question
+      summary: List all questions in a survey
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+      responses:
+        '200':
+          description: List of questions in the survey
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+
+  /api/surveys/{surveyId}/questions/{questionId}:
+    get:
+      tags:
+        - Question
+      summary: Get a specific question
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the question to retrieve
+      responses:
+        '200':
+          description: Question details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '404':
+          description: Question not found
+
+    put:
+      tags:
+        - Question
+      summary: Update a question
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+      responses:
+        '200':
+          description: Question updated
+    delete:
+      tags:
+        - Question
+      summary: Delete a question
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+      responses:
+        '204':
+          description: Question deleted
+
+  /api/surveys/{surveyId}/questions/{questionId}/lock:
+    patch:
+      tags:
+        - Question
+      summary: Lock/Unlock a question
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locked:
+                  type: boolean
+      responses:
+        '200':
+          description: Lock status updated
+
+  /api/surveys/{surveyId}/questions/{questionId}/response:
+    post:
+      tags:
+        - Response
+      summary: Submit a response to a specific question
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Response'
+      responses:
+        '201':
+          description: Response successfully recorded
+        '400':
+          description: Invalid request data
+    get:
+      tags:
+        - Response
+      summary: Retrieve all responses for a specific question
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+      responses:
+        '200':
+          description: List of responses retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Response'
+        '404':
+          description: No responses found
+
+  /api/surveys/{surveyId}/questions/{questionId}/responses/{responseId}:
+    get:
+      tags:
+        - Response
+      summary: Get a specific response
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the response to retrieve
+      responses:
+        '200':
+          description: Response details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '404':
+          description: Response not found
+    put:
+      tags:
+        - Response
+      summary: Update a specific response
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the response to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Response'
+      responses:
+        '200':
+          description: Response updated successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: Response not found
+    delete:
+      tags:
+        - Response
+      summary: Delete a specific response
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the response to delete
+      responses:
+        '204':
+          description: Response deleted successfully
+        '404':
+          description: Response not found
+  /api/surveys/{surveyId}/questions/{questionId}/responses/{responseId}/lock:
+    patch:
+      tags:
+        - Response
+      summary: Lock/Unlock a response
+      parameters:
+        - $ref: '#/components/parameters/surveyId'
+        - $ref: '#/components/parameters/questionId'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the response to lock/unlock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locked:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Lock status updated
+        '400':
+          description: Invalid request data
+        '404':
+          description: Response not found
+
+
+components:
+  parameters:
+    surveyId:
+      name: surveyId
+      in: path
+      required: true
+      schema:
+        type: string
+    questionId:
+      name: questionId
+      in: path
+      required: true
+      schema:
+        type: string
+    responseId:
+      name: responseId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    Survey:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        question:
+          type: array
+          items:
+            type: object
+       
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        questionType:
+          type: string
+          enum:
+            - Rating Scale with Icons
+            - Free-Text Answer
+            - Date Picker Question
+            - Multiple Choice with Text Answers
+            - Multiple Choice with Image Answers
+            - Multiple Choice with Text Answers
+            - Numeric Scale Question
+            - Yes/No Question
+        response:
+          type: array
+          items:
+            type: object
+    Response:
+      type: object
+      properties:
+        Id:
+          type: integer
+        text:
+          type: string
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
