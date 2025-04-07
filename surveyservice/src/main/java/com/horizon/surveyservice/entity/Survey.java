@@ -19,6 +19,7 @@ public class Survey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String surveyType;//  avec score ou nn come donner un avi
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     private List<Question> questions;
 
