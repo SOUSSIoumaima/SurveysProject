@@ -517,6 +517,9 @@ components:
           description: Possible responses for the question, used in choice-based questions
         score:
           type: integer
+          type: integer
+          minimum: 0
+          maximum: 100
         locked:
           type: boolean
           description: Indicates if the question is locked for editing
@@ -528,20 +531,38 @@ components:
     Response:
       type: object
       properties:
-        questionId:
-          type: string
         responseId:
           type: string
-        text : 
+        surveyId:
           type: string
+        questionId:
+          type: string
+        respondentId:
+          type: string
+          description: ID of the user who submitted this response
+        text: 
+          type: string
+          description: Response value, format depends on question_type
         isCorrect:
           type: boolean
+          description: Only applicable for exam-type surveys
         score:
           type: integer
+          description: Only applicable for exam-type surveys
+        submittedAt:
+          type: string
+          format: date-time
       required:
-        - questionId
-        - responseId
-        - text
-        - isCorrect
-        - score
+       - responseId
+       - surveyId
+       - questionId
+       - respondentId
+       - text
+       - submittedAt
+
+
+
+
+
+
 
