@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -18,8 +19,17 @@ public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String surveyType;//  avec score ou nn come donner un avi
+    @Enumerated(EnumType.STRING)
+    private surveyType type;
+    private String title;
+    private String description;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deadline;
+    private boolean locked;
+    private Integer totalScore;
+
+
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     private List<Question> questions;
 

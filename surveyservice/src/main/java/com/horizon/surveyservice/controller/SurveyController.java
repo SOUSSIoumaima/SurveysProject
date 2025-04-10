@@ -5,6 +5,7 @@ import com.horizon.surveyservice.entity.Question;
 import com.horizon.surveyservice.entity.Survey;
 import com.horizon.surveyservice.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,28 +17,31 @@ public class SurveyController {
     @Autowired
     private SurveyService surveyService;
     @PostMapping
-    public Survey createSurvey(@RequestBody Survey survey){
-        return surveyService.createSurvey(survey);
+    public ResponseEntity<Survey> createSurvey(@RequestBody Survey survey){
+        return ResponseEntity.status(201).body(surveyService.createSurvey(survey));
     }
     @GetMapping("/{id}")
-    public Survey getSurvey(@PathVariable Long id){
-        return surveyService.getSurvey(id);
+    public ResponseEntity<Survey> getSurveyById(@PathVariable Long id){
+        Survey survey = surveyService.getSurveyById(id);
+        if (survey != null) {
+            return ResponseEntity.ok(survey);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
     @GetMapping
     public List<Survey> getAllSurveys(){
+
         return surveyService.getAllSurveys();
     }
-    @PostMapping("/{surveyId}/questions")
-    public Question createQuestion(@PathVariable Long surveyId,@RequestBody Question question ){
-        Survey survey = surveyService.getSurvey(surveyId);
-        question.setSurvey(survey);
-        return surveyService.createQuestion(question);
+    @PutMapping("/{id}")
+    public ResponseEntity<Survey> updateSurvey(@PathVariable Long id, @RequestBody Survey survey){
+        return ResponseEntity.ok(surveyService.updateSurvey(id, survey));
     }
-    @PostMapping("/{surveyId}/questions/{questionId}/answers")
-    public Answer createAnswer(@PathVariable Long surveyId,@PathVariable Long questionId,@RequestBody Answer answer){
-        Question question = surveyService.getSurvey(surveyId).getQuestions().stream().filter(q -> q.getId().equals(questionId)).findFirst().orElse(null);
-        answer.setQuestion(question);
-        return surveyService.createAnswer(answer);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSurvey(@PathVariable Long id){
+        surveyService.deleteSurvey(id);
+        return ResponseEntity.ok().build();
     }
 
 
