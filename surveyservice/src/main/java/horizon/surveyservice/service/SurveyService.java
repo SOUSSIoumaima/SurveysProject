@@ -6,14 +6,9 @@ import java.util.List;
 
 public interface SurveyService {
     SurveyDto createSurvey(SurveyDto surveyDto);
-
-    SurveyDto getSurveyById(String surveyId);
-
+    SurveyDto getSurveyById(Long surveyId);
     List<SurveyDto> getAllSurveys();
-
-    SurveyDto updateSurvey(String surveyId, SurveyDto surveyDto);
-
-    void deleteSurvey(String surveyId);
-
-    SurveyDto patchSurvey(Long id, boolean locked);
+    SurveyDto updateSurvey(Long surveyId, SurveyDto surveyDto);
+    void deleteSurvey(Long surveyId);
+//    SurveyDto patchSurveyLocked(Long id, boolean locked);
 }
