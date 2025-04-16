@@ -1,4 +1,4 @@
-package com.horizon.surveyservice.entity;
+package horizon.surveyservice.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,23 +17,34 @@ import java.util.List;
 public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Enumerated(EnumType.STRING)
-    private surveyType type;
-    private String title;
-    private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deadline;
-    private boolean locked;
-    private Integer totalScore;
+    private Long surveyId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SurveyType type;
+
+    @Column(nullable = false)
+    private String title;
+
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SurveyStatus status;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime deadline;
+
+    private boolean locked;
+
+    private Integer totalScore;
 
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     private List<Question> questions;
-
-
-
-
 
 }

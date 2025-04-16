@@ -1,13 +1,13 @@
-package com.horizon.surveyservice;
+package horizon.surveyservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SurveyServiceApplication {
+public class SurveyserviceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SurveyServiceApplication.class, args);
+        SpringApplication.run(SurveyserviceApplication.class, args);
     }
 
 }
