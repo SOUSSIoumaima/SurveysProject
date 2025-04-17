@@ -3,6 +3,7 @@ info:
   title: Survey Management API
   version: 1.0.0
   description: API for managing surveys and questions
+
 paths:
   /surveys:
     post:
@@ -49,7 +50,8 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Survey found
@@ -69,7 +71,8 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -95,7 +98,8 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Survey deleted successfully
@@ -111,7 +115,8 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -121,7 +126,6 @@ paths:
               properties:
                 locked:
                   type: boolean
-                  description: Set to true to lock, false to unlock
                   example: true
       responses:
         '200':
@@ -144,7 +148,8 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -168,7 +173,8 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: List of all questions for the survey
@@ -190,12 +196,14 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Question found
@@ -215,12 +223,14 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -246,12 +256,14 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Question deleted successfully
@@ -267,12 +279,14 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -291,7 +305,7 @@ paths:
                 $ref: '#/components/schemas/Question'
         '404':
           description: Question or survey not found
-          
+
   /surveys/{surveyId}/questions/{questionId}/responses:
     post:
       tags:
@@ -303,12 +317,14 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -333,12 +349,14 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: List of all responses for the question
@@ -360,17 +378,20 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: responseId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Response found
@@ -391,17 +412,20 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: responseId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -428,23 +452,25 @@ paths:
           name: surveyId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: questionId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - in: path
           name: responseId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Response deleted successfully
         '404':
           description: Response not found
-
 
 components:
   schemas:
@@ -452,7 +478,8 @@ components:
       type: object
       properties:
         surveyId:
-          type: string
+          type: integer
+          format: int64
         type:
           type: string
           enum: [feedback, exam]
@@ -494,10 +521,11 @@ components:
       type: object
       properties:
         questionId:
-          type: string
+          type: integer
+          format: int64
         surveyId:
-          type: string
-          description: ID of the survey this question belongs to
+          type: integer
+          format: int64
         question_text:
           type: string
         question_type:
@@ -514,55 +542,45 @@ components:
           type: array
           items:
             type: string
-          description: Possible responses for the question, used in choice-based questions
         score:
-          type: integer
           type: integer
           minimum: 0
           maximum: 100
         locked:
           type: boolean
-          description: Indicates if the question is locked for editing
       required:
         - questionId
         - surveyId
         - question_text
         - question_type
+
     Response:
       type: object
       properties:
         responseId:
-          type: string
+          type: integer
+          format: int64
         surveyId:
-          type: string
+          type: integer
+          format: int64
         questionId:
-          type: string
+          type: integer
+          format: int64
         respondentId:
           type: string
-          description: ID of the user who submitted this response
-        text: 
+        text:
           type: string
-          description: Response value, format depends on question_type
         isCorrect:
           type: boolean
-          description: Only applicable for exam-type surveys
         score:
           type: integer
-          description: Only applicable for exam-type surveys
         submittedAt:
           type: string
           format: date-time
       required:
-       - responseId
-       - surveyId
-       - questionId
-       - respondentId
-       - text
-       - submittedAt
-
-
-
-
-
-
-
+        - responseId
+        - surveyId
+        - questionId
+        - respondentId
+        - text
+        - submittedAt
