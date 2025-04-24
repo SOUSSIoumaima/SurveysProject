@@ -107,6 +107,41 @@ paths:
           description: Survey deleted successfully
         '404':
           description: Survey not found
+  /surveys/{surveyId}/score/{respondentId}:
+    get:
+      tags:
+        - Survey
+      summary: Get total score for a respondent on an exam-type survey
+      operationId: getTotalScoreForRespondent
+      parameters:
+        - in: path
+          name: surveyId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: path
+          name: respondentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Total score for the respondent in the survey
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  respondentId:
+                    type: string
+                  surveyId:
+                    type: integer
+                    format: int64
+                  totalScore:
+                    type: integer
+        '404':
+          description: Survey or responses not found
 
   /surveys/{surveyId}/questions:
     post:
@@ -242,6 +277,7 @@ paths:
           description: Question deleted successfully
         '404':
           description: Question or survey not found
+  
 
   /surveys/{surveyId}/questions/{questionId}/responses:
     post:
@@ -341,7 +377,8 @@ paths:
       tags:
         - Response
       summary: Update a response (if not locked)
-      operationId: Cannot update a question if it is locked (locked = true)
+      description: Cannot update a Response if it is locked (locked = true)
+      operationId: updateResponse
       parameters:
         - in: path
           name: surveyId
@@ -382,7 +419,8 @@ paths:
       tags:
         - Response
       summary: Delete a response (if not locked)
-      operationId: Cannot delete a question if it is locked (locked = true)
+      description: Cannot delete a response if it is locked (locked = true)
+      operationId: deleteResponse
       parameters:
         - in: path
           name: surveyId
@@ -409,6 +447,83 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Response not found
+  /surveys/{surveyId}/submit:
+    post:
+      tags:
+        - Response
+      summary: Submit all responses for a survey
+      description: Allows a respondent to submit all their responses for a specific survey.
+      operationId: submitSurveyResponses
+      parameters:
+        - in: path
+          name: surveyId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the survey to submit responses for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                responses:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Response'
+              required:
+                - responses
+      responses:
+        '201':
+          description: Responses successfully submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Responses submitted successfully"
+        '400':
+          description: Bad request, invalid responses or data
+        '404':
+          description: Survey not found
+  /surveys/{surveyId}/responses/{respondentId}:
+    get:
+      tags:
+        - Response
+      summary: Get all responses submitted by a respondent for a specific survey
+      description: Retrieve all responses submitted by a specific respondent for a given survey.
+      operationId: getResponsesByRespondent
+      parameters:
+        - in: path
+          name: surveyId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the survey
+        - in: path
+          name: respondentId
+          required: true
+          schema:
+            type: string
+          description: ID of the respondent
+      responses:
+        '200':
+          description: Successfully retrieved responses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Response'
+        '404':
+          description: Survey or respondent not found
+        '400':
+          description: Bad request due to invalid parameters
 
 components:
   schemas:
@@ -416,6 +531,15 @@ components:
       type: object
       properties:
         surveyId:
+          type: integer
+          format: int64
+        organisationId:
+          type: integer
+          format: int64
+        departmentId:
+          type: integer
+          format: int64
+        userId:
           type: integer
           format: int64
         type:
@@ -448,12 +572,14 @@ components:
           description: Only for exam surveys
       required:
         - surveyId
+        - organisationId
+        - departmentId
+        - userId
         - type
         - title
         - status
         - created_at
         - updated_at
-        - questions
 
     Question:
       type: object
@@ -509,6 +635,8 @@ components:
         text:
           type: string
         isCorrect:
+          type: boolean
+        isSelected:   # Champ pour savoir si cette réponse a été choisie par le répondant
           type: boolean
         score:
           type: integer
