@@ -61,6 +61,7 @@ paths:
                 $ref: '#/components/schemas/Survey'
         '404':
           description: Survey not found
+    
     put:
       tags:
         - Survey
@@ -87,6 +88,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Survey'
+        '403':
+          description: Forbidden - survey is locked
+
         '404':
           description: Survey not found
     delete:
@@ -105,57 +109,67 @@ paths:
       responses:
         '200':
           description: Survey deleted successfully
+        '403':
+          description: Forbidden - survey is locked
+
         '404':
           description: Survey not found
-  /surveys/{surveyId}/score/{respondentId}:
-    get:
+        
+  /surveys/{surveyId}/questions/{questionId}:
+    post:
       tags:
         - Survey
-      summary: Get total score for a respondent on an exam-type survey
-      operationId: getTotalScoreForRespondent
+      summary: Assign a question to a survey
+      operationId: assignQuestionToSurvey
       parameters:
-        - in: path
-          name: surveyId
+        - name: surveyId
+          in: path
           required: true
           schema:
             type: integer
-            format: int64
-        - in: path
-          name: respondentId
+        - name: questionId
+          in: path
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         '200':
-          description: Total score for the respondent in the survey
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  respondentId:
-                    type: string
-                  surveyId:
-                    type: integer
-                    format: int64
-                  totalScore:
-                    type: integer
+          description: Question successfully assigned to survey
+        '403':
+          description: Forbidden - survey or question is locked
         '404':
-          description: Survey or responses not found
+          description: Survey or question not found
+    delete:
+      tags:
+        - Survey
+      summary: Unassign a question from a survey
+      operationId: unassignQuestionFromSurvey
+      parameters:
+        - name: surveyId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question successfully unassigned from survey
+        '403':
+          description: Forbidden - survey or question is locked
+        '404':
+          description: Survey or question not found
+  
 
-  /surveys/{surveyId}/questions:
+  /questions:
     post:
       tags:
         - Question
-      summary: Add a new question to a survey
-      operationId: addQuestionToSurvey
-      parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
+      summary: Create a new question
+      operationId: createQuestion
       requestBody:
         required: true
         content:
@@ -164,26 +178,22 @@ paths:
               $ref: '#/components/schemas/Question'
       responses:
         '201':
-          description: Question added successfully
+          description: Question created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Question'
+        '400':
+          description: Invalid input
+
     get:
       tags:
         - Question
-      summary: Get all questions for a survey
-      operationId: getQuestionsForSurvey
-      parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
+      summary: Get all questions
+      operationId: getAllQuestions
       responses:
         '200':
-          description: List of all questions for the survey
+          description: List of questions
           content:
             application/json:
               schema:
@@ -191,25 +201,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/Question'
 
-  /surveys/{surveyId}/questions/{questionId}:
+  /questions/{id}:
     get:
       tags:
         - Question
       summary: Get a question by ID
-      operationId: getQuestion
+      operationId: getQuestionById
       parameters:
-        - in: path
-          name: surveyId
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-            format: int64
-        - in: path
-          name: questionId
-          required: true
-          schema:
-            type: integer
-            format: int64
       responses:
         '200':
           description: Question found
@@ -217,27 +220,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Question'
+        '403':
+          description: Forbidden - response is locked
         '404':
-          description: Question or survey not found
+          description: Question not found
+
     put:
       tags:
         - Question
-      summary: Update a question in a survey
-      description: Cannot update a question if it is locked (locked = true)
+      summary: Update a question
       operationId: updateQuestion
       parameters:
-        - in: path
-          name: surveyId
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-            format: int64
-        - in: path
-          name: questionId
-          required: true
-          schema:
-            type: integer
-            format: int64
       requestBody:
         required: true
         content:
@@ -246,38 +244,57 @@ paths:
               $ref: '#/components/schemas/Question'
       responses:
         '200':
-          description: Question updated successfully
+          description: Question updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Question'
+        '403':
+          description: Forbidden - response is locked
         '404':
-          description: Question or survey not found
+          description: Question not found
+
     delete:
       tags:
         - Question
-      summary: Delete a question from a survey
-      description: Cannot delete a question if it is locked (locked = true)
+      summary: Delete a question
       operationId: deleteQuestion
       parameters:
-        - in: path
-          name: surveyId
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-            format: int64
-        - in: path
-          name: questionId
+      responses:
+        '204':
+          description: Question deleted
+        '403':
+          description: Forbidden - response is locked
+        '404':
+          description: Question not found
+  /questions/{subject}:
+    get:
+      tags:
+        - Question
+      summary: Get questions by subject
+      operationId: getQuestionsBySubject
+      parameters:
+        - name: subject
+          in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
-          description: Question deleted successfully
+          description: List of questions with the given subject
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
         '404':
-          description: Question or survey not found
-  
+          description: No questions found for the given subject
 
   /surveys/{surveyId}/questions/{questionId}/responses:
     post:
@@ -587,9 +604,8 @@ components:
         questionId:
           type: integer
           format: int64
-        surveyId:
-          type: integer
-          format: int64
+        subject:
+          type: string
         question_text:
           type: string
         question_type:
@@ -614,9 +630,29 @@ components:
           type: boolean
       required:
         - questionId
-        - surveyId
+        - subject
         - question_text
         - question_type
+
+    
+    ResponseOptions:
+      type: object
+      properties:
+        optionId:
+          type: integer
+          format: int64
+      optionText:
+        type: string
+      isCorrect:
+        type: boolean
+        description: Indique si l'option est correcte (utile pour les QCM)
+      score:
+        type: integer
+        description: Score attribué à cette option si elle est correcte
+    required:
+      - optionId
+      - optionText
+      - score
 
     Response:
       type: object
@@ -624,31 +660,32 @@ components:
         responseId:
           type: integer
           format: int64
-        surveyId:
-          type: integer
-          format: int64
         questionId:
           type: integer
           format: int64
+      
         respondentId:
           type: string
-        text:
-          type: string
-        isCorrect:
-          type: boolean
-        isSelected:   # Champ pour savoir si cette réponse a été choisie par le répondant
-          type: boolean
-        score:
-          type: integer
+        responseOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseOptions'  # Référence à ResponseOptions
+          description: Liste des options de réponse pour cette question
+        selectedOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseOptions'
+          description: Liste des options sélectionnées par le répondant (si applicable)
         submittedAt:
           type: string
           format: date-time
+          description: Date et heure de soumission de la réponse
         isLocked:
           type: boolean
+          description: Indique si la réponse est verrouillée (non modifiable)
       required:
         - responseId
-        - surveyId
         - questionId
         - respondentId
-        - text
-        - submittedAt
+        - responseOptions
+        
