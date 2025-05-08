@@ -690,6 +690,8 @@ components:
         isCorrect:
           type: boolean
           description: Indique si l'option est correcte (utile pour les QCM)
+        isSelected:
+          type: boolean
         score:
           type: integer
           description: Score attribué à cette option si elle est correcte
@@ -711,10 +713,6 @@ components:
         respondentId:
           type: string
         responseOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResponseOption'
-        selectedOptions:
           type: array
           items:
             $ref: '#/components/schemas/ResponseOption'
