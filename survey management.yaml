@@ -320,14 +320,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Response'
+              $ref: '#/components/schemas/Responses'
       responses:
         '201':
           description: Response created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/Responses'
     get:
       tags:
         - Response
@@ -354,7 +354,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Response'
+                  $ref: '#/components/schemas/Responses'
 
   /surveys/{surveyId}/questions/{questionId}/responses/{responseId}:
     get:
@@ -387,7 +387,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/Responses'
         '404':
           description: Response not found
     put:
@@ -420,14 +420,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Response'
+              $ref: '#/components/schemas/Responses'
       responses:
         '200':
           description: Response updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/Responses'
         '403':
           description: Forbidden - response is locked
         '404':
@@ -489,7 +489,7 @@ paths:
                 responses:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Response'
+                    $ref: '#/components/schemas/Responses'
               required:
                 - responses
       responses:
@@ -536,7 +536,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Response'
+                  $ref: '#/components/schemas/Responses'
         '404':
           description: Survey or respondent not found
         '400':
@@ -621,7 +621,7 @@ components:
         responses:
           type: array
           items:
-            $ref: '#/components/schemas/Response'
+            $ref: '#/components/schemas/Responses'
         score:
           type: integer
           minimum: 0
@@ -635,26 +635,26 @@ components:
         - question_type
 
     
-    ResponseOptions:
+    ResponseOption:
       type: object
       properties:
         optionId:
           type: integer
           format: int64
-      optionText:
-        type: string
-      isCorrect:
-        type: boolean
-        description: Indique si l'option est correcte (utile pour les QCM)
-      score:
-        type: integer
-        description: Score attribué à cette option si elle est correcte
-    required:
-      - optionId
-      - optionText
-      - score
+        optionText:
+          type: string
+        isCorrect:
+          type: boolean
+          description: Indique si l'option est correcte (utile pour les QCM)
+        score:
+          type: integer
+          description: Score attribué à cette option si elle est correcte
+      required:
+        - optionId
+        - optionText
+        - score
 
-    Response:
+    Responses:
       type: object
       properties:
         responseId:
@@ -663,26 +663,21 @@ components:
         questionId:
           type: integer
           format: int64
-      
         respondentId:
           type: string
         responseOptions:
           type: array
           items:
-            $ref: '#/components/schemas/ResponseOptions'  # Référence à ResponseOptions
-          description: Liste des options de réponse pour cette question
+            $ref: '#/components/schemas/ResponseOption'
         selectedOptions:
           type: array
           items:
-            $ref: '#/components/schemas/ResponseOptions'
-          description: Liste des options sélectionnées par le répondant (si applicable)
+            $ref: '#/components/schemas/ResponseOption'
         submittedAt:
           type: string
           format: date-time
-          description: Date et heure de soumission de la réponse
         isLocked:
           type: boolean
-          description: Indique si la réponse est verrouillée (non modifiable)
       required:
         - responseId
         - questionId
