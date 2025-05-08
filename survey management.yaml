@@ -428,30 +428,6 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Response not found
-          
-  /responses/{respondentId}:
-    get:
-      tags:
-        - Response
-      summary: Get all responses submitted by a respondent
-      operationId: getResponsesByRespondent
-      parameters:
-        - in: path
-          name: respondentId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of responses by respondent
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Response'
-        '404':
-          description: No responses found
   
   /questions/{questionId}/response/{responseId}/options:
     post:
