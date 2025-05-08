@@ -296,7 +296,7 @@ paths:
         '404':
           description: No questions found for the given subject
 
-  /questions/{questionId}/responses:
+  /questions/{questionId}/response:
     post:
       tags:
         - Response
@@ -344,7 +344,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Response'
 
-  /questions/{questionId}/responses/{responseId}:
+  /questions/{questionId}/response/{responseId}:
     get:
       tags:
         - Response
@@ -374,6 +374,7 @@ paths:
       tags:
         - Response
       summary: Update a response
+      description: Cannot update a Response if it is locked (locked = true)
       operationId: updateResponse
       parameters:
         - in: path
@@ -399,6 +400,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
+        '403':
+          description: Forbidden - response is locked
         '404':
           description: Response not found
     delete:
@@ -425,8 +428,32 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Response not found
+          
+  /responses/{respondentId}:
+    get:
+      tags:
+        - Response
+      summary: Get all responses submitted by a respondent
+      operationId: getResponsesByRespondent
+      parameters:
+        - in: path
+          name: respondentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of responses by respondent
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Response'
+        '404':
+          description: No responses found
   
-  /questions/{questionId}/responses/{responseId}/options:
+  /questions/{questionId}/response/{responseId}/options:
     post:
       tags:
         - ResponseOption
@@ -488,7 +515,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ResponseOption'
 
-  /questions/{questionId}/responses/{responseId}/options/{optionId}:
+  /questions/{questionId}/response/{responseId}/options/{optionId}:
     put:
       tags:
         - ResponseOption
@@ -567,7 +594,7 @@ components:
         departmentId:
           type: integer
           format: int64
-        userId:
+        ownerId:
           type: integer
           format: int64
         type:
@@ -602,7 +629,7 @@ components:
         - surveyId
         - organisationId
         - departmentId
-        - userId
+        - ownerId
         - type
         - title
         - status
@@ -629,8 +656,8 @@ components:
             - multiple_choice_image
             - numeric_scale
             - yes_no
-        responses:
-          type: array
+        response:
+          type: object
           items:
             $ref: '#/components/schemas/Response'
         score:
@@ -668,8 +695,9 @@ components:
           description: Score attribué à cette option si elle est correcte
       required:
         - optionId
+        - questionId
+        - responseId
         - optionText
-        - score
 
     Response:
       type: object
@@ -698,6 +726,12 @@ components:
       required:
         - responseId
         - questionId
-        - respondentId
         - responseOptions
+        
+        
+        
+        
+        
+        
+        
         
