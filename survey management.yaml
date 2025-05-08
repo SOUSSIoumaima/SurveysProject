@@ -5,7 +5,7 @@ info:
   description: API for managing surveys and questions
 
 paths:
-  /surveys:
+  /survey:
     post:
       tags:
         - Survey
@@ -39,7 +39,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Survey'
 
-  /surveys/{surveyId}:
+  /survey/{surveyId}:
     get:
       tags:
         - Survey
@@ -115,7 +115,7 @@ paths:
         '404':
           description: Survey not found
         
-  /surveys/{surveyId}/questions/{questionId}:
+  /survey/{surveyId}/question/{questionId}:
     post:
       tags:
         - Survey
@@ -164,7 +164,7 @@ paths:
           description: Survey or question not found
   
 
-  /questions:
+  /question:
     post:
       tags:
         - Question
@@ -201,14 +201,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/Question'
 
-  /questions/{id}:
+  /question/{questionId}:
     get:
       tags:
         - Question
       summary: Get a question by ID
       operationId: getQuestionById
       parameters:
-        - name: id
+        - name: questionId
           in: path
           required: true
           schema:
@@ -231,7 +231,7 @@ paths:
       summary: Update a question
       operationId: updateQuestion
       parameters:
-        - name: id
+        - name: questionId
           in: path
           required: true
           schema:
@@ -260,7 +260,7 @@ paths:
       summary: Delete a question
       operationId: deleteQuestion
       parameters:
-        - name: id
+        - name: questionId
           in: path
           required: true
           schema:
@@ -296,7 +296,7 @@ paths:
         '404':
           description: No questions found for the given subject
 
-  /questions/{questionId}/response:
+  /question/{questionId}/response:
     post:
       tags:
         - Response
@@ -344,7 +344,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Response'
 
-  /questions/{questionId}/response/{responseId}:
+  /question/{questionId}/response/{responseId}:
     get:
       tags:
         - Response
@@ -428,32 +428,8 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Response not found
-          
-  /responses/{respondentId}:
-    get:
-      tags:
-        - Response
-      summary: Get all responses submitted by a respondent
-      operationId: getResponsesByRespondent
-      parameters:
-        - in: path
-          name: respondentId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of responses by respondent
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Response'
-        '404':
-          description: No responses found
   
-  /questions/{questionId}/response/{responseId}/options:
+  /question/{questionId}/response/{responseId}/options:
     post:
       tags:
         - ResponseOption
@@ -515,7 +491,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ResponseOption'
 
-  /questions/{questionId}/response/{responseId}/options/{optionId}:
+  /question/{questionId}/response/{responseId}/option/{optionId}:
     put:
       tags:
         - ResponseOption
@@ -622,9 +598,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Question'
-        total_score:
-          type: integer
-          description: Only for exam surveys
       required:
         - surveyId
         - organisationId
@@ -690,6 +663,8 @@ components:
         isCorrect:
           type: boolean
           description: Indique si l'option est correcte (utile pour les QCM)
+        isSelected:
+          type: boolean
         score:
           type: integer
           description: Score attribué à cette option si elle est correcte
@@ -711,10 +686,6 @@ components:
         respondentId:
           type: string
         responseOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResponseOption'
-        selectedOptions:
           type: array
           items:
             $ref: '#/components/schemas/ResponseOption'
