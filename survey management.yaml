@@ -296,19 +296,13 @@ paths:
         '404':
           description: No questions found for the given subject
 
-  /surveys/{surveyId}/questions/{questionId}/responses:
+  /questions/{questionId}/responses:
     post:
       tags:
         - Response
-      summary: Create a new response for a question
+      summary: Create a response for a question
       operationId: createResponse
       parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
         - in: path
           name: questionId
           required: true
@@ -320,14 +314,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Responses'
+              $ref: '#/components/schemas/Response'
       responses:
         '201':
-          description: Response created successfully
+          description: Response created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses'
+                $ref: '#/components/schemas/Response'
     get:
       tags:
         - Response
@@ -335,12 +329,6 @@ paths:
       operationId: getAllResponses
       parameters:
         - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - in: path
           name: questionId
           required: true
           schema:
@@ -348,103 +336,103 @@ paths:
             format: int64
       responses:
         '200':
-          description: List of all responses for the question
+          description: List of responses
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Responses'
+                  $ref: '#/components/schemas/Response'
 
-  /surveys/{surveyId}/questions/{questionId}/responses/{responseId}:
+  /questions/{questionId}/responses/{responseId}:
     get:
       tags:
         - Response
-      summary: Get a response by ID
+      summary: Get a specific response
       operationId: getResponseById
       parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
         - in: path
           name: questionId
           required: true
           schema:
             type: integer
-            format: int64
         - in: path
           name: responseId
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         '200':
           description: Response found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses'
+                $ref: '#/components/schemas/Response'
         '404':
           description: Response not found
     put:
       tags:
         - Response
-      summary: Update a response (if not locked)
-      description: Cannot update a Response if it is locked (locked = true)
+      summary: Update a response
       operationId: updateResponse
       parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
         - in: path
           name: questionId
           required: true
           schema:
             type: integer
-            format: int64
         - in: path
           name: responseId
           required: true
           schema:
             type: integer
-            format: int64
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Responses'
+              $ref: '#/components/schemas/Response'
       responses:
         '200':
-          description: Response updated successfully
+          description: Response updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses'
-        '403':
-          description: Forbidden - response is locked
+                $ref: '#/components/schemas/Response'
         '404':
           description: Response not found
     delete:
       tags:
         - Response
-      summary: Delete a response (if not locked)
-      description: Cannot delete a response if it is locked (locked = true)
+      summary: Delete a response
+      description: Only allowed if response is not locked
       operationId: deleteResponse
       parameters:
         - in: path
-          name: surveyId
+          name: questionId
           required: true
           schema:
             type: integer
-            format: int64
+        - in: path
+          name: responseId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Response deleted
+        '403':
+          description: Forbidden - response is locked
+        '404':
+          description: Response not found
+  
+  /questions/{questionId}/responses/{responseId}/options:
+    post:
+      tags:
+        - ResponseOption
+      summary: Add one or more options to a response
+      operationId: addResponseOptions
+      parameters:
         - in: path
           name: questionId
           required: true
@@ -457,91 +445,114 @@ paths:
           schema:
             type: integer
             format: int64
-      responses:
-        '200':
-          description: Response deleted successfully
-        '403':
-          description: Forbidden - response is locked
-        '404':
-          description: Response not found
-  /surveys/{surveyId}/submit:
-    post:
-      tags:
-        - Response
-      summary: Submit all responses for a survey
-      description: Allows a respondent to submit all their responses for a specific survey.
-      operationId: submitSurveyResponses
-      parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
-          description: ID of the survey to submit responses for
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                responses:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Responses'
-              required:
-                - responses
+              type: array
+              items:
+                $ref: '#/components/schemas/ResponseOption'
       responses:
         '201':
-          description: Responses successfully submitted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Responses submitted successfully"
-        '400':
-          description: Bad request, invalid responses or data
-        '404':
-          description: Survey not found
-  /surveys/{surveyId}/responses/{respondentId}:
-    get:
-      tags:
-        - Response
-      summary: Get all responses submitted by a respondent for a specific survey
-      description: Retrieve all responses submitted by a specific respondent for a given survey.
-      operationId: getResponsesByRespondent
-      parameters:
-        - in: path
-          name: surveyId
-          required: true
-          schema:
-            type: integer
-            format: int64
-          description: ID of the survey
-        - in: path
-          name: respondentId
-          required: true
-          schema:
-            type: string
-          description: ID of the respondent
-      responses:
-        '200':
-          description: Successfully retrieved responses
+          description: Options added successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Responses'
-        '404':
-          description: Survey or respondent not found
-        '400':
-          description: Bad request due to invalid parameters
+                  $ref: '#/components/schemas/ResponseOption'
+    get:
+      tags:
+        - ResponseOption
+      summary: Get all options associated with a response
+      operationId: getResponseOptions
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: responseId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of options for the response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseOption'
 
+  /questions/{questionId}/responses/{responseId}/options/{optionId}:
+    put:
+      tags:
+        - ResponseOption
+      summary: Update an option within a response
+      operationId: updateResponseOption
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: responseId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: optionId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseOption'
+      responses:
+        '200':
+          description: Option updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOption'
+        '404':
+          description: Option not found
+          
+    delete:
+      tags:
+        - ResponseOption
+      summary: Delete an option from a response
+      operationId: deleteResponseOption
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: responseId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: optionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Option deleted
+        '404':
+          description: Option not found
+  
 components:
   schemas:
     Survey:
@@ -621,7 +632,7 @@ components:
         responses:
           type: array
           items:
-            $ref: '#/components/schemas/Responses'
+            $ref: '#/components/schemas/Response'
         score:
           type: integer
           minimum: 0
@@ -638,6 +649,12 @@ components:
     ResponseOption:
       type: object
       properties:
+        questionId:
+          type: integer
+          format: int64
+        responseId:
+          type: integer
+          format: int64
         optionId:
           type: integer
           format: int64
@@ -654,7 +671,7 @@ components:
         - optionText
         - score
 
-    Responses:
+    Response:
       type: object
       properties:
         responseId:
