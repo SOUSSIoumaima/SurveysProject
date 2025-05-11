@@ -163,6 +163,48 @@ paths:
         '404':
           description: Survey or question not found
   
+  /responseSurvey:
+    post:
+      tags:
+        - ResponseSurvey
+      summary: Submit a complete survey response
+      operationId: submitResponseSurvey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseSurvey'
+      responses:
+        '201':
+          description: Response survey submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSurvey'
+
+  /responseSurvey/{responseSurveyId}:
+    get:
+      tags:
+        - ResponseSurvey
+      summary: Get a response survey by ID
+      operationId: getResponseSurveyById
+      parameters:
+        - name: responseSurveyId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Response survey found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSurvey'
+        '404':
+          description: Response survey not found
+  
 
   /question:
     post:
@@ -272,7 +314,7 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Question not found
-  /questions/{subject}:
+  /question/by-subject/{subject}:
     get:
       tags:
         - Question
@@ -296,10 +338,10 @@ paths:
         '404':
           description: No questions found for the given subject
 
-  /question/{questionId}/response:
+  /question/{questionId}/Option:
     post:
       tags:
-        - Response
+        - Option
       summary: Create a response for a question
       operationId: createResponse
       parameters:
@@ -314,17 +356,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Response'
+              $ref: '#/components/schemas/Option'
       responses:
         '201':
           description: Response created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/Option'
     get:
       tags:
-        - Response
+        - Option
       summary: Get all responses for a question
       operationId: getAllResponses
       parameters:
@@ -342,12 +384,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Response'
+                  $ref: '#/components/schemas/Option'
 
-  /question/{questionId}/response/{responseId}:
+  /question/{questionId}/option/{optionId}:
     get:
       tags:
-        - Response
+        - Option
       summary: Get a specific response
       operationId: getResponseById
       parameters:
@@ -357,7 +399,7 @@ paths:
           schema:
             type: integer
         - in: path
-          name: responseId
+          name: optionId
           required: true
           schema:
             type: integer
@@ -367,12 +409,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/Option'
         '404':
           description: Response not found
     put:
       tags:
-        - Response
+        - Option
       summary: Update a response
       description: Cannot update a Response if it is locked (locked = true)
       operationId: updateResponse
@@ -383,7 +425,7 @@ paths:
           schema:
             type: integer
         - in: path
-          name: responseId
+          name: optionId
           required: true
           schema:
             type: integer
@@ -392,21 +434,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Response'
+              $ref: '#/components/schemas/Option'
       responses:
         '200':
           description: Response updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/Option'
         '403':
           description: Forbidden - response is locked
         '404':
           description: Response not found
     delete:
       tags:
-        - Response
+        - Option
       summary: Delete a response
       description: Only allowed if response is not locked
       operationId: deleteResponse
@@ -417,7 +459,7 @@ paths:
           schema:
             type: integer
         - in: path
-          name: responseId
+          name: optionId
           required: true
           schema:
             type: integer
@@ -428,62 +470,46 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Response not found
-  
-  /question/{questionId}/response/{responseId}/options:
+
+  /responseOption:
     post:
       tags:
         - ResponseOption
-      summary: Add one or more options to a response
-      operationId: addResponseOptions
-      parameters:
-        - in: path
-          name: questionId
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - in: path
-          name: responseId
-          required: true
-          schema:
-            type: integer
-            format: int64
+      summary: Submit a response option
+      operationId: createResponseOption
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ResponseOption'
+              $ref: '#/components/schemas/ResponseOption'
       responses:
         '201':
-          description: Options added successfully
+          description: Response option successfully created
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ResponseOption'
+                $ref: '#/components/schemas/ResponseOption'
+
     get:
       tags:
         - ResponseOption
-      summary: Get all options associated with a response
-      operationId: getResponseOptions
+      summary: Get response options by question and respondent
+      operationId: getResponseOptionsByQuestionAndRespondent
       parameters:
-        - in: path
-          name: questionId
+        - name: questionId
+          in: query
           required: true
           schema:
             type: integer
-        - in: path
-          name: responseId
+        - name: respondentId
+          in: query
           required: true
           schema:
             type: integer
       responses:
         '200':
-          description: List of options for the response
+          description: List of response options
           content:
             application/json:
               schema:
@@ -491,25 +517,34 @@ paths:
                 items:
                   $ref: '#/components/schemas/ResponseOption'
 
-  /question/{questionId}/response/{responseId}/option/{optionId}:
+  /responseOption/{responseOptionId}:
+    get:
+      tags:
+        - ResponseOption
+      summary: Get a response option by ID
+      operationId: getResponseOptionById
+      parameters:
+        - name: responseOptionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Response option details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOption'
+
     put:
       tags:
         - ResponseOption
-      summary: Update an option within a response
+      summary: Update a response option
       operationId: updateResponseOption
       parameters:
-        - in: path
-          name: questionId
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: responseId
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: optionId
+        - name: responseOptionId
+          in: path
           required: true
           schema:
             type: integer
@@ -521,41 +556,30 @@ paths:
               $ref: '#/components/schemas/ResponseOption'
       responses:
         '200':
-          description: Option updated
+          description: Response option updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseOption'
-        '404':
-          description: Option not found
-          
+
     delete:
       tags:
         - ResponseOption
-      summary: Delete an option from a response
+      summary: Delete a response option
       operationId: deleteResponseOption
       parameters:
-        - in: path
-          name: questionId
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: responseId
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: optionId
+        - name: responseOptionId
+          in: path
           required: true
           schema:
             type: integer
       responses:
-        '200':
-          description: Option deleted
-        '404':
-          description: Option not found
-  
+        '204':
+          description: Successfully deleted
+          
+    
+
+
 components:
   schemas:
     Survey:
@@ -629,10 +653,10 @@ components:
             - multiple_choice_image
             - numeric_scale
             - yes_no
-        response:
-          type: object
+        options:
+          type: array
           items:
-            $ref: '#/components/schemas/Response'
+            $ref: '#/components/schemas/Option'
         score:
           type: integer
           minimum: 0
@@ -649,13 +673,16 @@ components:
     ResponseOption:
       type: object
       properties:
-        questionId:
-          type: integer
-          format: int64
-        responseId:
+        responseOptionId:
           type: integer
           format: int64
         optionId:
+          type: integer
+          format: int64
+        questionId:
+          type: integer
+          format: int64
+        respondentId:
           type: integer
           format: int64
         optionText:
@@ -663,39 +690,117 @@ components:
         isCorrect:
           type: boolean
           description: Indique si l'option est correcte (utile pour les QCM)
+        isLocked:
+          type: boolean
+        submittedAt:
+          type: string
+          format: date-time
         isSelected:
           type: boolean
         score:
           type: integer
           description: Score attribué à cette option si elle est correcte
       required:
+        - responseOptionId
         - optionId
         - questionId
         - responseId
+        - respondentId
         - optionText
+        - isCorrect
+        - score
+        - submittedAt
+        - isSelected
 
-    Response:
+    Option:
       type: object
       properties:
-        responseId:
+        optionId:
           type: integer
           format: int64
         questionId:
           type: integer
           format: int64
-        respondentId:
+        optionText:
+          type: string
+        isCorrect:
+          type: boolean
+          description: Indique si l'option est correcte (utile pour les QCM)
+        score:
+          type: integer
+          description: Score attribué à cette option si elle est correcte
+        isLocked:
+          type: boolean
+      required:
+        - optionId
+        - questionId
+        - optionText
+        - isCorrect
+        - score
+        - isLocked
+        
+    ResponseQuestion:
+      type: object
+      properties:
+        questionId:
+          type: integer
+        text:
           type: string
         responseOptions:
           type: array
           items:
             $ref: '#/components/schemas/ResponseOption'
+        score:
+          type: integer
+          description: Score for the question (useful for exams)
+      required:
+        - questionId
+        - text
+        - responseOptions
+    
+       
+    ResponseSurvey:
+      type: object
+      properties:
+        responseSurveyId:
+          type: integer
+          format: int64
+        surveyId:
+          type: integer
+          format: int64
+        respondentId:
+          type: integer
+          format: int64
         submittedAt:
           type: string
           format: date-time
-        isLocked:
-          type: boolean
+        totalScore:
+          type: integer
+          description: Total score obtenu par le répondant (utile pour les examens)
+        responseQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseQuestion'
       required:
-        - responseId
-        - questionId
-        - responseOptions
-        
+        - responseSurveyId
+        - surveyId
+        - respondentId
+        - submittedAt
+        - responseOptions    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
