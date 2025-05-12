@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Survey Management API
   version: 1.0.0
-  description: API for managing surveys and questions
+  description:  This API allows you to manage surveys, questions, options, and participant responses, including scoring and correctness of answers.
 
 paths:
   /survey:
@@ -337,6 +337,118 @@ paths:
                   $ref: '#/components/schemas/Question'
         '404':
           description: No questions found for the given subject
+  
+  /responseQuestion:
+    post:
+      tags:
+        - ResponseQuestion
+      summary: Submit a response to a question
+      operationId: submitResponseToQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseQuestion'
+      responses:
+        '201':
+          description: Response to question submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseQuestion'
+
+    get:
+      tags:
+        - ResponseQuestion
+      summary: Get all responses to questions (optionally filtered by questionId/respondentId)
+      operationId: getAllResponseQuestions
+      parameters:
+        - in: query
+          name: questionId
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: respondentId
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of question responses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseQuestion'
+
+  /responseQuestion/{responseQuestionId}:
+    get:
+      tags:
+        - ResponseQuestion
+      summary: Get a response to a question by ID
+      operationId: getResponseQuestionById
+      parameters:
+        - in: path
+          name: responseQuestionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Response to question found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseQuestion'
+        '404':
+          description: Response not found
+
+    put:
+      tags:
+        - ResponseQuestion
+      summary: Update a response to a question
+      operationId: updateResponseQuestion
+      parameters:
+        - in: path
+          name: responseQuestionId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseQuestion'
+      responses:
+        '200':
+          description: Response updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseQuestion'
+        '404':
+          description: Response not found
+
+    delete:
+      tags:
+        - ResponseQuestion
+      summary: Delete a response to a question
+      operationId: deleteResponseQuestion
+      parameters:
+        - in: path
+          name: responseQuestionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Response deleted
+        '404':
+          description: Response not found
 
   /question/{questionId}/Option:
     post:
@@ -470,6 +582,8 @@ paths:
           description: Forbidden - response is locked
         '404':
           description: Response not found
+  
+  
 
   /responseOption:
     post:
@@ -641,9 +755,9 @@ components:
           format: int64
         subject:
           type: string
-        question_text:
+        questionText:
           type: string
-        question_type:
+        questionType:
           type: string
           enum:
             - rating_scale_icons
@@ -670,6 +784,37 @@ components:
         - question_type
 
     
+   
+    Option:
+      type: object
+      properties:
+        optionId:
+          type: integer
+          format: int64
+        questionId:
+          type: integer
+          format: int64
+        optionText:
+          type: string
+        isCorrect:
+          type: boolean
+          description: Indicates whether the option is correct (useful for multiple-choice questions)
+        score:
+          type: integer
+          description: Score assigned to this option if it is correct
+        isLocked:
+          type: boolean
+        freeText:
+          type: string
+          description: Free text input if the answer is an open-ended response
+      required:
+        - optionId
+        - questionId
+        - optionText
+        - isCorrect
+        - score
+        - isLocked
+        
     ResponseOption:
       type: object
       properties:
@@ -689,7 +834,7 @@ components:
           type: string
         isCorrect:
           type: boolean
-          description: Indique si l'option est correcte (utile pour les QCM)
+          description: Indicates whether the option is correct (useful for multiple-choice questions)
         isLocked:
           type: boolean
         submittedAt:
@@ -697,9 +842,12 @@ components:
           format: date-time
         isSelected:
           type: boolean
+        freeText:
+          type: string
+          description: Free text input if the answer is an open-ended response
         score:
           type: integer
-          description: Score attribué à cette option si elle est correcte
+          description: Score assigned to this option if it is correct
       required:
         - responseOptionId
         - optionId
@@ -711,52 +859,39 @@ components:
         - score
         - submittedAt
         - isSelected
-
-    Option:
-      type: object
-      properties:
-        optionId:
-          type: integer
-          format: int64
-        questionId:
-          type: integer
-          format: int64
-        optionText:
-          type: string
-        isCorrect:
-          type: boolean
-          description: Indique si l'option est correcte (utile pour les QCM)
-        score:
-          type: integer
-          description: Score attribué à cette option si elle est correcte
-        isLocked:
-          type: boolean
-      required:
-        - optionId
-        - questionId
-        - optionText
-        - isCorrect
-        - score
-        - isLocked
         
     ResponseQuestion:
       type: object
       properties:
+        responseQuestionId:
+          type: integer
+          format: int64
+        respondentId:
+          type: integer
+          format: int64
+        surveyId:
+          type: integer
+          format: int64
         questionId:
           type: integer
-        text:
+          format: int64
+        questionText:
           type: string
-        responseOptions:
+        responseOption:
           type: array
-          items:
+          items: 
             $ref: '#/components/schemas/ResponseOption'
         score:
-          type: integer
-          description: Score for the question (useful for exams)
+          type: number
+          format: float
+        submittedAt:
+          type: string
+          format: date-time
       required:
+        - responseQuestionId
+        - respondentId
+        - surveyId
         - questionId
-        - text
-        - responseOptions
     
        
     ResponseSurvey:
@@ -776,7 +911,7 @@ components:
           format: date-time
         totalScore:
           type: integer
-          description: Total score obtenu par le répondant (utile pour les examens)
+          description: Total score obtained by the respondent (useful for exams)
         responseQuestions:
           type: array
           items:
