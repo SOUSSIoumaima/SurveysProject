@@ -1,5 +1,6 @@
 package horizon.surveyservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,24 +12,28 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "question")
+@Table(name = "Question")
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
-    @ManyToOne
-    @JoinColumn(name = "survey_id", nullable = false)
-    private Survey survey;
+    @Column(nullable = false)
+    private String subject;
     @Column(nullable = false)
     private String questionText;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private QuestionType questionType;
-
-    @ElementCollection
-    @CollectionTable(name = "question_responses", joinColumns = @JoinColumn(name = "question_id"))
-    @Column(name = "response_text")
-    private List<Response> responses;
-    private Integer score;
+    @Column(nullable = false)
+    @JsonBackReference
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Option> options;
+    @Column(nullable = false)
     private boolean locked;
+
+
+
+
+
+
+
 }
