@@ -18,14 +18,14 @@ public class OptionMapper {
         return dto;
 
     }
-    public static Option toEntity(OptionDto dto, Question question) {
+    public static Option toEntity(OptionDto optiondto, Question question) {
         Option option = new Option();
-        option.setOptionId(dto.getOptionId());
+        option.setOptionId(optiondto.getOptionId());
         option.setQuestion(question);
-        option.setOptionText(dto.getOptionText());
-        option.setCorrect(dto.isCorrect());
-        option.setOptionScore(dto.getOptionScore());
-        option.setLocked(dto.isLocked());
+        option.setOptionText(optiondto.getOptionText());
+        option.setCorrect(optiondto.isCorrect());
+        option.setOptionScore(optiondto.getOptionScore());
+        option.setLocked(optiondto.isLocked());
         return option;
 
     }
