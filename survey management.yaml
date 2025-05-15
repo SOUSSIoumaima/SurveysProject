@@ -24,6 +24,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Survey'
+        '403':
+            description: Forbidden - user not authorized to perform this action
     get:
       tags:
         - Survey
@@ -38,6 +40,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Survey'
+        '403':
+            description: Forbidden - user not authorized to perform this action
 
   /survey/{surveyId}:
     get:
@@ -61,6 +65,8 @@ paths:
                 $ref: '#/components/schemas/Survey'
         '404':
           description: Survey not found
+        '403':
+            description: Forbidden - user not authorized to perform this action
     
     put:
       tags:
@@ -89,7 +95,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Survey'
         '403':
-          description: Forbidden - survey is locked
+          description: Forbidden - survey is locked or user not authorized to perform this action
 
         '404':
           description: Survey not found
@@ -110,7 +116,7 @@ paths:
         '200':
           description: Survey deleted successfully
         '403':
-          description: Forbidden - survey is locked
+          description: Forbidden - survey is locked or user not authorized to perform this action
 
         '404':
           description: Survey not found
@@ -136,7 +142,7 @@ paths:
         '200':
           description: Question successfully assigned to survey
         '403':
-          description: Forbidden - survey or question is locked
+          description: Forbidden - survey or question is locked or user not authorized to perform this action
         '404':
           description: Survey or question not found
     delete:
@@ -159,7 +165,7 @@ paths:
         '200':
           description: Question successfully unassigned from survey
         '403':
-          description: Forbidden - survey or question is locked
+          description: Forbidden - survey or question is locked or user not authorized to perform this action
         '404':
           description: Survey or question not found
   
@@ -204,6 +210,7 @@ paths:
                 $ref: '#/components/schemas/ResponseSurvey'
         '404':
           description: Response survey not found
+        
   
 
   /question:
@@ -227,6 +234,8 @@ paths:
                 $ref: '#/components/schemas/Question'
         '400':
           description: Invalid input
+        '403':
+            description: Forbidden - user not authorized to perform this action
 
     get:
       tags:
@@ -242,6 +251,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Question'
+        '403':
+            description: Forbidden - user not authorized to perform this action
 
   /question/{questionId}:
     get:
@@ -263,7 +274,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Question'
         '403':
-          description: Forbidden - response is locked
+          description: Forbidden - response is locked or user not authorized to perform this action
         '404':
           description: Question not found
 
@@ -292,7 +303,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Question'
         '403':
-          description: Forbidden - response is locked
+          description: Forbidden - response is locked or user not authorized to perform this action
         '404':
           description: Question not found
 
@@ -311,7 +322,7 @@ paths:
         '204':
           description: Question deleted
         '403':
-          description: Forbidden - response is locked
+          description: Forbidden - response is locked or user not authorized to perform this action
         '404':
           description: Question not found
   /question/by-subject/{subject}:
@@ -337,6 +348,9 @@ paths:
                   $ref: '#/components/schemas/Question'
         '404':
           description: No questions found for the given subject
+        '403':
+            description: Forbidden - user not authorized to perform this action
+        
   
   /responseQuestion:
     post:
@@ -357,6 +371,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseQuestion'
+        
 
     get:
       tags:
@@ -476,6 +491,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Option'
+        '403':
+            description: Forbidden - user not authorized to perform this action
     get:
       tags:
         - Option
@@ -497,6 +514,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Option'
+        '403':
+            description: Forbidden - user not authorized to perform this action
 
   /question/{questionId}/option/{optionId}:
     get:
@@ -524,6 +543,8 @@ paths:
                 $ref: '#/components/schemas/Option'
         '404':
           description: option not found
+        '403':
+            description: Forbidden - user not authorized to perform this action
     put:
       tags:
         - Option
@@ -555,7 +576,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Option'
         '403':
-          description: Forbidden - option is locked
+          description: Forbidden - option is locked or user not authorized to perform this action
         '404':
           description: option not found
     delete:
@@ -579,7 +600,7 @@ paths:
         '200':
           description: Option deleted
         '403':
-          description: Forbidden - option is locked
+          description: Forbidden - option is locked or user not authorized to perform this action
         '404':
           description: Option not found
   
@@ -771,10 +792,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Option'
-        score:
-          type: integer
-          minimum: 0
-          maximum: 100
+        
         locked:
           type: boolean
       required:
@@ -782,6 +800,8 @@ components:
         - subject
         - question_text
         - question_type
+        - options
+        - locked
 
     
    
@@ -799,7 +819,7 @@ components:
         isCorrect:
           type: boolean
           description: Indicates whether the option is correct (useful for multiple-choice questions)
-        score:
+        optionScore:
           type: integer
           description: Score assigned to this option if it is correct
         isLocked:
