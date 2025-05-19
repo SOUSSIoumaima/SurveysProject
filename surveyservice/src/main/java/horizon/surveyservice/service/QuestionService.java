@@ -8,6 +8,8 @@ public interface QuestionService {
     List<QuestionDto> getAllQuestions();
     QuestionDto getQuestionById(Long id);
     QuestionDto createQuestion(QuestionDto questionDto);
-    QuestionDto updateQuestion(QuestionDto questionDto);
+    QuestionDto updateQuestion(Long id,QuestionDto questionDto);
+    List<QuestionDto> getBySubject(String subject);
     void deleteQuestion(Long id);
+
 }

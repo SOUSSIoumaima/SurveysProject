@@ -6,10 +6,11 @@ import horizon.surveyservice.exeptions.ResourceNotFoundException;
 import horizon.surveyservice.mapper.QuestionMapper;
 import horizon.surveyservice.repository.QuestionRepository;
 import horizon.surveyservice.service.QuestionService;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
@@ -19,12 +20,16 @@ public class QuestionServiceImpl implements QuestionService {
     }
     @Override
     public List<QuestionDto> getAllQuestions() {
-        return List.of();
+        return questionRepository.findAll().stream()
+                .map(QuestionMapper::toDTO)
+                .collect(Collectors.toList());
+
     }
 
     @Override
     public QuestionDto getQuestionById(Long id) {
-        Question question = questionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+id));
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+id));
         return QuestionMapper.toDTO(question);
 
     }
@@ -37,12 +42,37 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionDto updateQuestion(QuestionDto questionDto) {
-        return null;
+    public QuestionDto updateQuestion(Long id,QuestionDto questionDto) {
+        Question existing = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+id));
+        existing.setSubject(questionDto.getSubject());
+        existing.setQuestionText(questionDto.getQuestionText());
+        existing.setQuestionType(questionDto.getQuestionType());
+        existing.setLocked(questionDto.isLocked());
+        Question updated = questionRepository.save(existing);
+        return QuestionMapper.toDTO(updated);
+
+
     }
 
     @Override
+    public List<QuestionDto> getBySubject(String subject) {
+        List<Question> question = questionRepository.findBySubject(subject);
+        if (question.isEmpty()) {
+            throw new ResourceNotFoundException("Question not found with subject:"+subject);
+        }
+        return question.stream()
+                .map(QuestionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
     public void deleteQuestion(Long id) {
+        if (!questionRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Question not found with id:"+id);
+            }
+        questionRepository.deleteById(id);
 
     }
 }
