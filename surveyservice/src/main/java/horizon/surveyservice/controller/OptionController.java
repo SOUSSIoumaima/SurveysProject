@@ -2,7 +2,8 @@ package horizon.surveyservice.controller;
 
 import horizon.surveyservice.DTO.OptionDto;
 import horizon.surveyservice.service.OptionService;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +11,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/options")
-@RequiredArgsConstructor
+
 public class OptionController {
+    @Autowired
     private final OptionService optionService;
+    public OptionController(OptionService optionService) {
+        this.optionService = optionService;
+    }
     @PostMapping
     public ResponseEntity<OptionDto> createOption(@RequestBody OptionDto optionDto) {
         return ResponseEntity.ok(optionService.createOption(optionDto));

@@ -11,7 +11,6 @@ public class OptionMapper {
         dto.setOptionId(option.getOptionId());
         dto.setQuestionId(option.getQuestion() != null ? option.getQuestion().getQuestionId() : null);
         dto.setOptionText(option.getOptionText());
-        dto.setOptionText(option.getOptionText());
         dto.setCorrect(option.isCorrect());
         dto.setOptionScore(option.getOptionScore());
         dto.setLocked(option.isLocked());
