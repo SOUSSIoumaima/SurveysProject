@@ -34,6 +34,7 @@ public class OptionController {
     public ResponseEntity<List<OptionDto>> getAllOptions() {
         return ResponseEntity.ok(optionService.getAllOptions());
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOption(@PathVariable Long id) {
         optionService.deleteOption(id);
