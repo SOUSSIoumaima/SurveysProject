@@ -1,10 +1,6 @@
 package horizon.surveyservice.DTO;
 
 
-import lombok.NoArgsConstructor;
-
-
-
 
 public class OptionDto {
     private Long optionId;

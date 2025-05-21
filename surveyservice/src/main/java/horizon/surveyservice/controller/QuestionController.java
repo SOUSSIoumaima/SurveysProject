@@ -3,6 +3,7 @@ package horizon.surveyservice.controller;
 import horizon.surveyservice.DTO.QuestionDto;
 import horizon.surveyservice.service.QuestionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,13 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
     public QuestionController(QuestionService questionService) {
+
         this.questionService = questionService;
+    }
+
+    @PostMapping
+    public ResponseEntity<QuestionDto> createQuestion(@RequestBody QuestionDto questionDto) {
+        return new ResponseEntity<>(questionService.createQuestion(questionDto), HttpStatus.CREATED);
     }
 
     @GetMapping
