@@ -31,7 +31,10 @@ public class QuestionMapper {
         question.setSubject(questionDto.getSubject());
         question.setLocked(questionDto.isLocked());
         if (questionDto.getOptions() != null) {
-            List<Option> options = questionDto.getOptions().stream().map(optionDto -> OptionMapper.toEntity(optionDto, question)).collect(Collectors.toList());
+            List<Option> options = questionDto.getOptions()
+                    .stream()
+                    .map(optionDto -> OptionMapper.toEntity(optionDto, question))
+                    .collect(Collectors.toList());
             question.setOptions(options);
         }
         return question;
