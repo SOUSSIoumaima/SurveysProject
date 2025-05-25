@@ -2,6 +2,7 @@ package horizon.surveyservice.service.serviceimpl;
 
 import horizon.surveyservice.DTO.QuestionDto;
 import horizon.surveyservice.entity.Question;
+import horizon.surveyservice.exeptions.LockedException;
 import horizon.surveyservice.exeptions.ResourceNotFoundException;
 import horizon.surveyservice.mapper.QuestionMapper;
 import horizon.surveyservice.repository.QuestionRepository;
@@ -16,8 +17,16 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
 
     public QuestionServiceImpl(QuestionRepository questionRepository) {
+
         this.questionRepository = questionRepository;
     }
+    @Override
+    public QuestionDto createQuestion(QuestionDto questionDto) {
+        Question question = QuestionMapper.toEntity(questionDto);
+        Question saved = questionRepository.save(question);
+        return QuestionMapper.toDTO(saved);
+    }
+
     @Override
     public List<QuestionDto> getAllQuestions() {
         return questionRepository.findAll().stream()
@@ -34,21 +43,18 @@ public class QuestionServiceImpl implements QuestionService {
 
     }
 
-    @Override
-    public QuestionDto createQuestion(QuestionDto questionDto) {
-        Question question = QuestionMapper.toEntity(questionDto);
-        Question saved = questionRepository.save(question);
-        return QuestionMapper.toDTO(saved);
-    }
+
 
     @Override
     public QuestionDto updateQuestion(Long id,QuestionDto questionDto) {
         Question existing = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+id));
+        if (existing.isLocked()){
+            throw new LockedException("Question is locked cannot be updated");
+        }
         existing.setSubject(questionDto.getSubject());
         existing.setQuestionText(questionDto.getQuestionText());
         existing.setQuestionType(questionDto.getQuestionType());
-        existing.setLocked(questionDto.isLocked());
         Question updated = questionRepository.save(existing);
         return QuestionMapper.toDTO(updated);
 
@@ -69,10 +75,30 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void deleteQuestion(Long id) {
-        if (!questionRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Question not found with id:"+id);
-            }
+        Question existing = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:" + id));
+        if (existing.isLocked()) {
+            throw new LockedException("Cannot delete a locked question with id: " + id);
+        }
         questionRepository.deleteById(id);
 
+    }
+
+    @Override
+    public QuestionDto lockQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+id));
+        question.setLocked(true);
+        Question saved = questionRepository.save(question);
+        return QuestionMapper.toDTO(saved);
+    }
+
+    @Override
+    public QuestionDto unlockQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+id));
+        question.setLocked(false);
+        Question saved = questionRepository.save(question);
+        return QuestionMapper.toDTO(saved);
     }
 }

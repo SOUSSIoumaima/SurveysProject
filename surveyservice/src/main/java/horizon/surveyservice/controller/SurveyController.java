@@ -24,40 +24,47 @@ public class SurveyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SurveyDto>> getAllSurveys(){
-        List<SurveyDto> allSurveys = surveyService.getAllSurveys();
-        return ResponseEntity.status(HttpStatus.OK).body(allSurveys);
+    public ResponseEntity<List<SurveyDto>> getAllSurveys() {
+        return ResponseEntity.ok(surveyService.getAllSurveys());
     }
 
     @GetMapping("/{surveyId}")
-    public ResponseEntity<SurveyDto> getSurveyById(@PathVariable Long surveyId){
-        try {
-            SurveyDto surveyDto = surveyService.getSurveyById(surveyId);
-            return ResponseEntity.ok(surveyDto);
-            } catch (ResourceNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public ResponseEntity<SurveyDto> getSurveyById(@PathVariable Long surveyId) {
+        return ResponseEntity.ok(surveyService.getSurveyById(surveyId));
     }
 
     @PutMapping("/{surveyId}")
-    public ResponseEntity<?> updateSurvey(@PathVariable Long surveyId, @RequestBody SurveyDto surveyDto) {
-        try {
-            SurveyDto updated = surveyService.updateSurvey(surveyId, surveyDto);
-            return ResponseEntity.ok(updated);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<SurveyDto> updateSurvey(@PathVariable Long surveyId, @RequestBody SurveyDto surveyDto) {
+        SurveyDto updatedSurvey = surveyService.updateSurvey(surveyId, surveyDto);
+        return ResponseEntity.ok(updatedSurvey);
     }
     @DeleteMapping("/{surveyId}")
-    public ResponseEntity<?> deleteSurvey(@PathVariable Long surveyId) {
-        try {
-            surveyService.deleteSurvey(surveyId);
-            return ResponseEntity.ok().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<List<SurveyDto>> deleteSurvey(@PathVariable Long surveyId) {
+        surveyService.deleteSurvey(surveyId);
+        List<SurveyDto> surveys = surveyService.getAllSurveys();
+        return ResponseEntity.ok(surveys);
     }
 
+    @PostMapping("/{surveyId}/question/{questionId}")
+    public ResponseEntity<SurveyDto> assignQuestionToSurvey(@PathVariable Long surveyId, @PathVariable Long questionId) {
+        surveyService.assignQuestionToSurvey(surveyId, questionId);
+        return ResponseEntity.ok(surveyService.getSurveyById(surveyId));
+    }
 
+    @DeleteMapping("/{surveyId}/question/{questionId}")
+    public ResponseEntity<SurveyDto> unassignQuestionFromSurvey(@PathVariable Long surveyId, @PathVariable Long questionId) {
+        surveyService.unassignQuestionFromSurvey(surveyId, questionId);
+        return ResponseEntity.ok(surveyService.getSurveyById(surveyId));
+    }
+
+    @PatchMapping("/{id}/lock")
+    public ResponseEntity<SurveyDto> lockSurvey(@PathVariable Long id) {
+        return ResponseEntity.ok(surveyService.lockSurvey(id));
+    }
+
+    @PatchMapping("/{id}/unlock")
+    public ResponseEntity<SurveyDto> unlockSurvey(@PathVariable Long id) {
+        return ResponseEntity.ok(surveyService.unlockSurvey(id));
+    }
 
 }

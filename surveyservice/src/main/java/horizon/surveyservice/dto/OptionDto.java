@@ -39,9 +39,7 @@ public class OptionDto {
         return isCorrect;
     }
 
-    public boolean isLocked() {
-        return isLocked;
-    }
+    public boolean isLocked() {return isLocked;}
 
     public Long getOptionScore() {
         return optionScore;
@@ -51,9 +49,7 @@ public class OptionDto {
         this.optionId = optionId;
     }
 
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
-    }
+    public void setQuestionId(Long questionId) {this.questionId = questionId;}
 
     public void setOptionText(String optionText) {
         this.optionText = optionText;

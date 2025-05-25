@@ -3,6 +3,7 @@ package horizon.surveyservice.service.serviceimpl;
 import horizon.surveyservice.DTO.OptionDto;
 import horizon.surveyservice.entity.Option;
 import horizon.surveyservice.entity.Question;
+import horizon.surveyservice.exeptions.LockedException;
 import horizon.surveyservice.exeptions.ResourceNotFoundException;
 import horizon.surveyservice.mapper.OptionMapper;
 import horizon.surveyservice.repository.OptionRepository;
@@ -34,6 +35,9 @@ public class OptionServiceImpl implements OptionService {
     public OptionDto updateOption(Long id, OptionDto optionDto) {
         Option existing = optionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Option not found with id:"+ id));
+        if (existing.isLocked()) {
+            throw new LockedException("Option is locked cannot be updated");
+        }
         Question question = questionRepository.findById(optionDto.getQuestionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id:"+ optionDto.getQuestionId()));
         existing.setOptionText(optionDto.getOptionText());
@@ -61,11 +65,30 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public void deleteOption(Long id) {
-        if (!optionRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Option not found with id:"+ id);
-
+        Option existing = optionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Option not found with id: " + id));
+        if (existing.isLocked()) {
+            throw new LockedException("Option is locked cannot be deleted");
         }
         optionRepository.deleteById(id);
 
+    }
+
+    @Override
+    public OptionDto lockOption(Long id) {
+        Option option = optionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Option not found with id: " + id));
+        option.setLocked(true);
+        optionRepository.save(option);
+        return OptionMapper.toDto(option);
+    }
+
+    @Override
+    public OptionDto unlockOption(Long id) {
+        Option option = optionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Option not found with id: " + id));
+        option.setLocked(false);
+        optionRepository.save(option);
+        return OptionMapper.toDto(option);
     }
 }

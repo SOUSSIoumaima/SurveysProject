@@ -10,6 +10,6 @@ public interface OptionService {
     OptionDto getOptionById(Long id);
     List<OptionDto> getAllOptions();
     void deleteOption(Long id);
-
-
+    OptionDto lockOption(Long id);
+    OptionDto unlockOption(Long id);
 }
