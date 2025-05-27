@@ -1,5 +1,6 @@
 package horizon.surveyservice.service.serviceimpl;
 
+
 import horizon.surveyservice.DTO.OptionDto;
 import horizon.surveyservice.entity.Option;
 import horizon.surveyservice.entity.Question;
@@ -54,6 +55,17 @@ public class OptionServiceImpl implements OptionService {
         Option option = optionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Option not found with id:"+ id));
         return OptionMapper.toDto(option);
+    }
+
+    @Override
+    public List<OptionDto> getOptionByQuestionId(Long questionId) {
+        List<Option> option = optionRepository.findByQuestionId(questionId);
+        if (option.isEmpty()) {
+            throw new ResourceNotFoundException("Option not found with Question id :"+questionId);
+        }
+        return option.stream()
+                .map(OptionMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

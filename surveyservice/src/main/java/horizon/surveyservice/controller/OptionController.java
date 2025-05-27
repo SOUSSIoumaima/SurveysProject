@@ -28,6 +28,12 @@ public class OptionController {
             return ResponseEntity.ok(optionDto);
     }
 
+    @GetMapping("/byQuestion/{questionId}")
+    public ResponseEntity<?> getOptionByQuestionId(@PathVariable Long questionId) {
+        List<OptionDto> options = optionService.getOptionByQuestionId(questionId);
+        return ResponseEntity.ok(options);
+    }
+
     @GetMapping
     public ResponseEntity<List<OptionDto>> getAllOptions() {
         return ResponseEntity.ok(optionService.getAllOptions());
