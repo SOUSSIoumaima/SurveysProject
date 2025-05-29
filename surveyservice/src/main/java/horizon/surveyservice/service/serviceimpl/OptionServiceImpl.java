@@ -59,7 +59,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public List<OptionDto> getOptionByQuestionId(Long questionId) {
-        List<Option> option = optionRepository.findByQuestionId(questionId);
+        List<Option> option = optionRepository.findByQuestionQuestionId(questionId);
         if (option.isEmpty()) {
             throw new ResourceNotFoundException("Option not found with Question id :"+questionId);
         }
@@ -82,7 +82,7 @@ public class OptionServiceImpl implements OptionService {
         if (existing.isLocked()) {
             throw new LockedException("Option is locked cannot be deleted");
         }
-        optionRepository.deleteById(id);
+        optionRepository.delete(existing);
 
     }
 

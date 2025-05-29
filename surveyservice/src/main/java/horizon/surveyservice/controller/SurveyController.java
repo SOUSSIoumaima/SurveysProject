@@ -2,7 +2,6 @@ package horizon.surveyservice.controller;
 
 import horizon.surveyservice.DTO.SurveyDto;
 
-import horizon.surveyservice.exeptions.ResourceNotFoundException;
 import horizon.surveyservice.service.SurveyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
