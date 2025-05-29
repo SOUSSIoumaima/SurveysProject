@@ -351,6 +351,56 @@ paths:
         '403':
             description: Forbidden - user not authorized to perform this action
         
+  /question/{questionId}/lock:
+    patch:
+      tags:
+        - Question
+      summary: Lock a question
+      description: Lock the question to prevent update or deletion
+      operationId: lockQuestion
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question locked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '403':
+          description: Forbidden - user not authorized to perform this action
+        '404':
+          description: Question not found
+
+  /question/{questionId}/unlock:
+    patch:
+      tags:
+        - Question
+      summary: Unlock a question
+      description: Unlock the question to allow update or deletion
+      operationId: unlockQuestion
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question unlocked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '403':
+          description: Forbidden - user not authorized to perform this action
+        '404':
+          description: Question not found
+
   
   /questionResponse:
     post:
@@ -453,7 +503,32 @@ paths:
           description: Response deleted
         '404':
           description: Response not found
-
+          
+  /questionResponse/by-survey-response/{surveyResponseId}:
+    get:
+      tags:
+        - QuestionResponse
+      summary: Get question responses by surveyResponseId
+      operationId: getQuestionResponsesBySurveyResponseId
+      parameters:
+        - name: surveyResponseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of question responses linked to the given survey response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuestionResponse'
+        '404':
+          description: No question responses found
+          
+  
   /question/{questionId}/Option:
     post:
       tags:
@@ -591,15 +666,99 @@ paths:
         '403':
           description: Forbidden - option is locked or user not authorized to perform this action
         '404':
-          description: Option not found
+          description: Option not 
+  /option/by-question/{questionId}:
+    get:
+      tags:
+        - Option
+      summary: Get options by question ID
+      operationId: getOptionsByQuestionId
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of options for the given question
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Option'
+        '404':
+          description: No options found for the given question
+        '403':
+          description: Forbidden - user not authorized to perform this action
   
+  /question/{questionId}/option/{optionId}/lock:
+    patch:
+      tags:
+        - Option
+      summary: Lock an option
+      description: Lock the option to prevent updates or deletion
+      operationId: lockOption
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: optionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Option locked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Option'
+        '403':
+          description: Forbidden - user not authorized to perform this action
+        '404':
+          description: Option not found
+
+  /question/{questionId}/option/{optionId}/unlock:
+    patch:
+      tags:
+        - Option
+      summary: Unlock an option
+      description: Unlock the option to allow updates or deletion
+      operationId: unlockOption
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: optionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Option unlocked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Option'
+        '403':
+          description: Forbidden - user not authorized to perform this action
+        '404':
+          description: Option not found
   
 
   /OptionResponse:
     post:
       tags:
         - OptionResponse
-      summary: Submit a response option
+      summary: Submit an option response
       operationId: createOptionResponse
       requestBody:
         required: true
@@ -701,12 +860,13 @@ paths:
         '404':
           description: not found
  
-  /optionResponse/{questionResponseId}:
+  
+  /optionResponse/by-question-response/{questionResponseId}:
     get:
       tags:
         - OptionResponse
-      summary: Get list of option responses by questionResponseId
-      operationId: getResponseOptionsByQuestionResponseId
+      summary: Get option responses by questionResponseId
+      operationId: getOptionResponsesByQuestionResponseId
       parameters:
         - name: questionResponseId
           in: path
@@ -715,15 +875,15 @@ paths:
             type: integer
       responses:
         '200':
-          description: option Responses details
+          description: List of option responses linked to the given question response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OptionResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/OptionResponse'
         '404':
-          description: not found
-          
-    
+          description: Not found
 
 
 components:
@@ -855,7 +1015,7 @@ components:
           type: string
         isCorrect:
           type: boolean
-          description: Indicates whether the option is correct 
+          description: Indicates whether the option is correct (useful for multiple-choice questions)
         isSelected:
           type: boolean
         freeText:
