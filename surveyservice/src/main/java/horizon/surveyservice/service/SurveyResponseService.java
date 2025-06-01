@@ -1,8 +1,6 @@
 package horizon.surveyservice.service;
 
-import horizon.surveyservice.DTO.SurveyDto;
 import horizon.surveyservice.DTO.SurveyResponseDto;
-import horizon.surveyservice.entity.SurveyResponse;
 
 import java.util.List;
 

@@ -1,11 +1,9 @@
 package horizon.surveyservice.mapper;
 
 import horizon.surveyservice.DTO.QuestionResponseDto;
-import horizon.surveyservice.entity.OptionResponse;
 import horizon.surveyservice.entity.QuestionResponse;
 import horizon.surveyservice.entity.SurveyResponse;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class QuestionResponseMapper {
@@ -19,6 +17,14 @@ public class QuestionResponseMapper {
         dto.setSubmittedAt(entity.getSubmittedAt());
         if (entity.getOptionResponses() != null) {
             dto.setSurveyResponseId(entity.getSurveyResponse().getSurveyResponseId());
+        }
+        if (entity.getOptionResponses() != null) {
+            dto.setOptionResponses(
+                    entity.getOptionResponses()
+                            .stream()
+                            .map(OptionResponseMapper::toDto)
+                            .collect(Collectors.toList())
+            );
         }
         return dto;
     }

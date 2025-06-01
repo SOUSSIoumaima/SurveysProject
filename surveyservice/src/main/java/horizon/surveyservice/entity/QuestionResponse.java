@@ -1,6 +1,7 @@
 package horizon.surveyservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public class QuestionResponse {
     @JoinColumn(name= "surveyResponseId",referencedColumnName = "surveyResponseId")
     private SurveyResponse surveyResponse;
     private String questionText;
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "questionResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OptionResponse> optionResponses;
     private Long questionScore;

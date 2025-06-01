@@ -1,9 +1,9 @@
 package horizon.surveyservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.annotation.Nullable;
+
 import jakarta.persistence.*;
-import lombok.*;
+
+//import java.util.UUID;
 
 
 @Entity
@@ -13,7 +13,10 @@ public class Option {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long optionId;
-
+//    @Id
+//    @GeneratedValue
+//    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
+//    private UUID optionId;
     @ManyToOne
     @JoinColumn(name= "questionId",referencedColumnName = "questionId")
     private Question question;
@@ -41,6 +44,10 @@ public class Option {
         return optionId;
     }
 
+    public void setOptionId(Long optionId) {
+        this.optionId = optionId;
+    }
+
     public Question getQuestion() {
         return question;
     }
@@ -61,9 +68,7 @@ public class Option {
         return isLocked;
     }
 
-    public void setOptionId(Long optionId) {
-        this.optionId = optionId;
-    }
+
 
     public void setQuestion(Question question) {
         this.question = question;

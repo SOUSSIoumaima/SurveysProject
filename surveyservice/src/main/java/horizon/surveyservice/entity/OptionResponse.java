@@ -1,5 +1,6 @@
 package horizon.surveyservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +11,7 @@ public class OptionResponse {
     private Long optionResponseId;
     @Column(nullable = false)
     private Long optionId;
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name= "questionResponseId",referencedColumnName = "questionResponseId")
     private QuestionResponse questionResponse;
