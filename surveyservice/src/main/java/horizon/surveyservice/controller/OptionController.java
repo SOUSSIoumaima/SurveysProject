@@ -4,6 +4,7 @@ import horizon.surveyservice.DTO.OptionDto;
 import horizon.surveyservice.service.OptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +19,13 @@ public class OptionController {
         this.optionService = optionService;
     }
 
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CREATE','ADMIN_ROOT')")
     @PostMapping
     public ResponseEntity<OptionDto> createOption(@RequestBody OptionDto optionDto) {
         return ResponseEntity.ok(optionService.createOption(optionDto));
     }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getOptionById(@PathVariable Long id) {
             OptionDto optionDto = optionService.getOptionById(id);
